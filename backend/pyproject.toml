@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "srsly"
+version = "0.1.0"
+description = "srs.ly backend"
+authors = ["Jethro Kuan <jethrokuan95@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+bottle = "^0.12.19"
+requests = "^2.25.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+app = "srsly.app:main"
