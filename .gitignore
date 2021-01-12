@@ -162,3 +162,5 @@ dmypy.json
 cython_debug/
 /backend/config.json
 *.db
+
+.eslintcache

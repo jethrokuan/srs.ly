@@ -1,52 +1,54 @@
-import Container from 'react-bootstrap/Container';
-import React, {Component} from "react";
-import Card from "react-bootstrap/Card";
-import SyncButton from './SyncButton';
+import { useState } from "react";
+import Review from "./Review";
+import Cards from "./Cards";
+import SyncButton from "./SyncButton";
+import { Menu } from "semantic-ui-react";
 
-class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      cards: []
-    }
-  }
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  NavLink,
+} from "react-router-dom";
 
-  componentDidMount() {
-    const apiUrl = "/cards";
+function App() {
+  return (
+    <Router>
+      <Menu pointing secondary>
+        <Menu.Item as={Link} to="/">
+          Srs.ly
+        </Menu.Item>
+        <Menu.Item as={NavLink} to="/review">
+          Review
+        </Menu.Item>
+        <Menu.Item as={NavLink} to="/cards">
+          Cards
+        </Menu.Item>
 
-    fetch(apiUrl)
-      .then((response) => {
-        return response.json();
-      }).then((data) => {
-        this.setState({
-          cards: data.cards
-        })
-      }).catch((error) => {
-        console.log(error);
-      });
-  }
-
-  render() {
-    return (
-      <Container>
-        <h1>Srs.ly</h1>
-        <SyncButton>Sync</SyncButton>
-        {this.state.cards.map((card) => {
-          return (<Card style={{ width: '18rem' }} key={card.id}>
-                    <Card.Body>
-                      <Card.Title>{card.text}</Card.Title>
-                      <Card.Text>
-                        <a href={card.uri}>{card.uri}</a>
-                        {card.id}
-                        {card.difficulty}
-                      </Card.Text>
-                    </Card.Body>
-                  </Card>);
-        
-      })}
-      </Container>
+        <Menu.Menu position="right">
+          <Menu.Item name="sync">
+            <SyncButton>Sync</SyncButton>
+          </Menu.Item>
+        </Menu.Menu>
+      </Menu>
+      <Switch>
+        <Route exact path="/">
+          <Home />
+        </Route>
+        <Route path="/review">
+          <Review />
+        </Route>
+        <Route path="/cards">
+          <Cards />
+        </Route>
+      </Switch>
+    </Router>
   );
-  }
+}
+
+function Home() {
+  return <p>Hello</p>;
 }
 
 export default App;

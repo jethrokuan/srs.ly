@@ -1,6 +1,8 @@
 import requests
+import datetime
 
-class HypothesisClient():
+
+class HypothesisClient:
     def __init__(self, user, token):
         self.user = user
         self.token = token
@@ -15,12 +17,14 @@ class HypothesisClient():
         res = requests.post(endpoint, data, headers=self.headers).json()
         annotations = [HypothesisAnnotation(row) for row in res["rows"]]
         return annotations
-                
 
-class HypothesisAnnotation():
+
+class HypothesisAnnotation:
     def __init__(self, row):
+        print(row)
         self.uri = row["uri"]
         self.id = row["id"]
-        self.created = row["created"]
-        self.updated = row["updated"]
+        self.created = datetime.datetime.fromisoformat(row["created"])
+        self.updated = datetime.datetime.fromisoformat(row["updated"])
         self.text = row["text"]
+        self.card_type = "basic" if "srsly-basic" in row["tags"] else "cloze" 
