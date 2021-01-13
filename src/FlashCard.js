@@ -2,12 +2,12 @@ import BasicCard from "./BasicCard";
 import ClozeCard from "./ClozeCard";
 
 function FlashCard(props) {
-  if (props.type === "basic") {
+  if (props.card.card_type === "basic") {
     return BasicCard(props);
-  } else if (props.type === "cloze") {
+  } else if (props.card.card_type === "cloze") {
     return ClozeCard(props);
   } else {
-    return <div>Hello</div>;
+    console.log("Error! Bad card type" + props.card.card_type);
   }
 }
 

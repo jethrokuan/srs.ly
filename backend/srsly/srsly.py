@@ -243,3 +243,15 @@ class SrslyClient:
                LIMIT 1""", (card_id,))
         self.db.commit()
         return Card.get(self.db, card_id)
+
+    def delete_card(self, card_id):        
+        if self.h_client.delete_annotation(card_id):
+            c = self.db.cursor()
+            c.execute(
+                """DELETE FROM cards
+                WHERE id = ?""", (card_id,)
+            )
+            self.db.commit()
+            return True
+        return False
+        

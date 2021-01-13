@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import { Table, Label, Container, Button, Card } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import { Table, Container, Button } from "semantic-ui-react";
 
 function Cards() {
   const [cards, setCards] = useState([]);
@@ -12,6 +11,23 @@ function Cards() {
       })
       .then((data) => {
         alert("Card Reset!");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const deleteCard = (id) => {
+    fetch(`/card/${id}/delete`)
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data["deleted"]) {
+          alert("Card deleted!");
+        } else {
+          alert("Failed to delete card.");
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -53,7 +69,7 @@ function Cards() {
                 <Table.Cell>{card.card_type}</Table.Cell>
                 <Table.Cell>{card.text}</Table.Cell>
                 <Table.Cell>
-                  <Link to={card.uri}>{card.uri}</Link>
+                  <a href={card.uri}>{card.uri}</a>
                 </Table.Cell>
                 <Table.Cell>
                   <ul>
@@ -76,7 +92,9 @@ function Cards() {
                     <Button color="blue" onClick={() => resetCard(card.id)}>
                       Reset
                     </Button>
-                    <Button color="red">Delete</Button>
+                    <Button color="red" onClick={() => deleteCard(card.id)}>
+                      Delete
+                    </Button>
                   </Button.Group>
                 </Table.Cell>
               </Table.Row>

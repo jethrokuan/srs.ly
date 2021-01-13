@@ -18,10 +18,14 @@ class HypothesisClient:
         annotations = [HypothesisAnnotation(row) for row in res["rows"]]
         return annotations
 
+    def delete_annotation(self, annotation_id):
+        endpoint = f"https://api.hypothes.is/api/annotations/{annotation_id}"
+        res = requests.delete(endpoint, headers=self.headers).json()
+        return res["deleted"]
+
 
 class HypothesisAnnotation:
     def __init__(self, row):
-        print(row)
         self.uri = row["uri"]
         self.id = row["id"]
         self.created = datetime.datetime.fromisoformat(row["created"])

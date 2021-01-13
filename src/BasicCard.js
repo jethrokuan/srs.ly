@@ -1,25 +1,7 @@
-import { useState } from "react";
-import {
-  Button,
-  TextArea,
-  Card,
-  Icon,
-  Form,
-  Grid,
-  Header,
-  Image,
-  Message,
-  Segment,
-} from "semantic-ui-react";
+import { Button, Icon } from "semantic-ui-react";
 
-const BasicCard = ({ id, text }) => {
-  let [phase, setPhase] = useState("question");
-
-  const [question, answer] = text.split("\n\n");
-
-  const revealAnswer = () => {
-    setPhase("answer");
-  };
+const BasicCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
+  const [question, answer] = card.text.split("\n\n");
 
   const submitRating = (rating) => {
     fetch("/review", {
@@ -29,11 +11,11 @@ const BasicCard = ({ id, text }) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: id,
+        id: card.id,
         rating: rating,
       }),
     }).then((response) => {
-      alert("Card Reviewed!");
+      nextCardHandler();
     });
   };
 
@@ -41,11 +23,9 @@ const BasicCard = ({ id, text }) => {
     return (
       <div>
         <h1>{question}</h1>
-        <Button animated onClick={revealAnswer}>
-          <Button.Content hidden>Reveal</Button.Content>
-          <Button.Content visible>
-            <Icon name="eye" />
-          </Button.Content>
+        <Button size="huge" onClick={revealButtonHandler}>
+          <Icon name="eye" />
+          Reveal
         </Button>
       </div>
     );
@@ -55,27 +35,21 @@ const BasicCard = ({ id, text }) => {
         <h1>{question}</h1>
         <p>{answer}</p>
         <Button.Group>
-          <Button color="red" onClick={() => submitRating(0.2)}>
+          <Button size="huge" color="red" onClick={() => submitRating(0.2)}>
             Again
           </Button>
-          <Button color="grey" onClick={() => submitRating(0.4)}>
+          <Button size="huge" color="grey" onClick={() => submitRating(0.4)}>
             Hard
           </Button>
-          <Button color="green" onClick={() => submitRating(0.6)}>
+          <Button size="huge" color="green" onClick={() => submitRating(0.6)}>
             Good
           </Button>
-          <Button color="blue" onClick={() => submitRating(0.8)}>
+          <Button size="huge" color="blue" onClick={() => submitRating(0.8)}>
             Easy
           </Button>
         </Button.Group>
       </div>
     );
-  } else {
-    <div>
-      <h1>{question}</h1>
-      <p>{answer}</p>
-      <div>Submitted!</div>
-    </div>;
   }
 };
 

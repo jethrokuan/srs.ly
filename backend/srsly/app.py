@@ -28,6 +28,12 @@ def reset(id):
     card = srsly_client.reset_card(id)
     return {"card": card.to_json()}
 
+@app.route("/card/<id>/delete")
+def reset(id):
+    res = srsly_client.delete_card(id)
+    return {"deleted": res}
+
+
 @app.route("/review", method="GET")
 def fetch_review():
     cards = srsly_client.fetch_review()
