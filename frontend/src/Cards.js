@@ -5,7 +5,7 @@ function Cards() {
   const [cards, setCards] = useState([]);
 
   const resetCard = (id) => {
-    fetch(`/card/${id}/reset`)
+    fetch(`/api/card/${id}/reset`)
       .then((response) => {
         return response.json();
       })
@@ -18,7 +18,7 @@ function Cards() {
   };
 
   const deleteCard = (id) => {
-    fetch(`/card/${id}/delete`)
+    fetch(`/api/card/${id}/delete`)
       .then((response) => {
         return response.json();
       })

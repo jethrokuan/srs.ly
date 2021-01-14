@@ -2,7 +2,8 @@ import sqlite3
 import json
 import os
 import datetime
-
+from dotenv import load_dotenv
+load_dotenv()
 
 class Card:
     def __init__(
@@ -70,8 +71,7 @@ class Card:
             date_last_reviewed = ?,
             percent_overdue = ?
         WHERE
-            id = ?
-        LIMIT 1""",
+            id = ?""",
             (
                 self.difficulty,
                 self.days_between,
@@ -121,17 +121,15 @@ class Card:
 class SrslyClient:
     def __init__(self, h_client):
         self.h_client = h_client
-        self.db_initialized = os.path.isfile("srsly.db")
         self.db = sqlite3.connect(
-            "srsly.db", detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+            os.getenv("DB_LOCATION"), detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
         )
         self.init_db()
 
     def init_db(self):
-        if not self.db_initialized:
-            c = self.db.cursor()
-            c.execute(
-                """CREATE TABLE cards
+        c = self.db.cursor()
+        c.execute(
+            """CREATE TABLE IF NOT EXISTS cards
             (id CHAR(250) PRIMARY KEY NOT NULL,
              card_type TEXT NOT NULL,
              text TEXT NOT NULL,
@@ -170,9 +168,9 @@ class SrslyClient:
         self.db.commit()
         return {"success": True}
 
-    def review(self, data):
-        card = Card.get(self.db, data["id"])
-        card.review(data["rating"])
+    def review(self, id, rating):
+        card = Card.get(self.db, id)
+        card.review(rating)
         card.save(self.db)
         return card
 
@@ -240,7 +238,7 @@ class SrslyClient:
                    date_last_reviewed = (DATETIME('now')),
                    percent_overdue = 1
                WHERE id = ?
-               LIMIT 1""", (card_id,))
+            """, (card_id,))
         self.db.commit()
         return Card.get(self.db, card_id)
 

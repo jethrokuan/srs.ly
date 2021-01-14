@@ -8,6 +8,7 @@ authors = ["Jethro Kuan <jethrokuan95@gmail.com>"]
 python = "^3.8"
 bottle = "^0.12.19"
 requests = "^2.25.1"
+python-dotenv = "^0.15.0"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

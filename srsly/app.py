@@ -1,15 +1,17 @@
-import json
+import os
 import bottle
 import requests
 from srsly.hypothesis import HypothesisClient
 from srsly.srsly import SrslyClient
 
+from dotenv import load_dotenv
+load_dotenv()
+
 app = bottle.Bottle()
 
-with open("config.json", "r") as f:
-    config = json.load(f)
-
-h_client = HypothesisClient(config["user"], config["token"])
+h_client = HypothesisClient(
+    os.getenv("HYPOTHESIS_USER"),
+    os.getenv("HYPOTHESIS_TOKEN"))
 srsly_client = SrslyClient(h_client)
 
 
@@ -38,10 +40,10 @@ def fetch_review():
     cards = srsly_client.fetch_review()
     return {"cards": [card.to_json() for card in cards]}
 
-@app.route("/api/review", method="POST")
-def review():
+@app.route("/api/card/<id>/review", method="POST")
+def review(id):
     data = bottle.request.json
-    updated_card = srsly_client.review(data)
+    updated_card = srsly_client.review(id, data["rating"])
     return updated_card.to_json()
 
 @app.route('/')
@@ -54,7 +56,7 @@ def server_static(filepath):
     return bottle.static_file(filepath, root='frontend/build/static')
 
 def main():
-    bottle.run(app, host="localhost", port=8080, debug=True)
+    bottle.run(app, host="0.0.0.0", port=8080, debug=True)
 
 
 if __name__ == "__main__":

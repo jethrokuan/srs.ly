@@ -21,14 +21,13 @@ const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
   );
 
   const submitRating = (rating) => {
-    fetch("/api/review", {
+    fetch(`/api/card/${card.id}/review`, {
       method: "post",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: card.id,
         rating: rating,
       }),
     }).then((response) => {
