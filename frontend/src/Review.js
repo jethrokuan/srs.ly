@@ -10,7 +10,7 @@ function Review() {
 
   useEffect(() => {
     if (!isLoaded) {
-      fetch("/review")
+      fetch("/api/review")
         .then((response) => {
           return response.json();
         })

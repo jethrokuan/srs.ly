@@ -35,7 +35,7 @@ function Cards() {
   };
 
   useEffect(() => {
-    fetch("/cards")
+    fetch("/api/cards")
       .then((response) => {
         return response.json();
       })

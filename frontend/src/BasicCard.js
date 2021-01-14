@@ -1,27 +1,10 @@
 import { Button, Icon } from "semantic-ui-react";
 
-const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
-  let question = card.text.slice();
-  const cloze_regex = /\[(.*?)\]/g;
-  let deletions = card.text.match(cloze_regex);
-  const random_index = Math.floor(Math.random() * deletions.length);
-  const random_deletion = deletions[random_index];
-  deletions.splice(random_index, 1);
-  for (let i = 0; i < deletions.length; i++) {
-    question = question.replace(
-      deletions[i],
-      deletions[i].substring(1, deletions[i].length - 1)
-    );
-  }
-  question = question.replace(random_deletion, "[...]");
-  let answer = question.slice();
-  answer = answer.replace(
-    "[...]",
-    random_deletion.substring(1, random_deletion.length - 1)
-  );
+const BasicCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
+  const [question, answer] = card.text.split("\n\n");
 
   const submitRating = (rating) => {
-    fetch("/review", {
+    fetch("/api/review", {
       method: "post",
       headers: {
         Accept: "application/json",
@@ -39,7 +22,7 @@ const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
   if (phase === "question") {
     return (
       <div>
-        <h2>{question}</h2>
+        <h1>{question}</h1>
         <Button size="huge" onClick={revealButtonHandler}>
           <Icon name="eye" />
           Reveal
@@ -49,7 +32,8 @@ const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
   } else if (phase === "answer") {
     return (
       <div>
-        <h2>{answer}</h2>
+        <h1>{question}</h1>
+        <p>{answer}</p>
         <Button.Group>
           <Button size="huge" color="red" onClick={() => submitRating(0.2)}>
             Again
@@ -64,10 +48,9 @@ const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
             Easy
           </Button>
         </Button.Group>
-        <br />
       </div>
     );
   }
 };
 
-export default ClozeCard;
+export default BasicCard;

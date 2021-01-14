@@ -5,9 +5,8 @@ function SyncButton() {
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    const endpoint = "/sync";
     if (isLoading) {
-      fetch(endpoint)
+      fetch("/api/sync")
         .then((response) => {
           return response.json();
         })
