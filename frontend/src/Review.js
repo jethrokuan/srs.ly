@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Loader, Grid, Segment, Placeholder } from "semantic-ui-react";
+import { Loader, Grid, Placeholder } from "semantic-ui-react";
 import FlashCard from "./FlashCard";
 
 function Review() {
@@ -7,6 +7,30 @@ function Review() {
   const [phase, setPhase] = useState("question");
   const [cards, setCards] = useState([]);
   const [reviewIndex, setReviewIndex] = useState(0);
+
+  const nextCardHandler = () => {
+    setPhase("question");
+    if (reviewIndex === cards.length - 1) {
+      setLoaded(false);
+    } else {
+      setReviewIndex(reviewIndex + 1);
+    }
+  };
+
+  const submitRating = (rating, card) => {
+    fetch(`/api/card/${card.id}/review`, {
+      method: "post",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        rating: rating,
+      }),
+    }).then((response) => {
+      nextCardHandler();
+    });
+  };
 
   useEffect(() => {
     if (!isLoaded) {
@@ -28,15 +52,6 @@ function Review() {
 
   const revealAnswer = () => {
     setPhase("answer");
-  };
-
-  const nextCardHandler = () => {
-    setPhase("question");
-    if (reviewIndex === cards.length - 1) {
-      setLoaded(false);
-    } else {
-      setReviewIndex(reviewIndex + 1);
-    }
   };
 
   if (isLoaded && cards.length === 0) {
@@ -67,22 +82,20 @@ function Review() {
               {card ? <a href={card.uri}>Source</a> : <span />})
             </p>
             <Loader active={!isLoaded} />
-            <Segment>
-              {isLoaded && card ? (
-                <FlashCard
-                  card={card}
-                  phase={phase}
-                  nextCardHandler={nextCardHandler}
-                  revealButtonHandler={revealAnswer}
-                />
-              ) : (
-                <Placeholder>
-                  <Placeholder.Header />
-                  <Placeholder.Line />
-                  <Placeholder.Line />
-                </Placeholder>
-              )}
-            </Segment>
+            {isLoaded && card ? (
+              <FlashCard
+                card={card}
+                phase={phase}
+                revealButtonHandler={revealAnswer}
+                submitRating={submitRating}
+              />
+            ) : (
+              <Placeholder>
+                <Placeholder.Header />
+                <Placeholder.Line />
+                <Placeholder.Line />
+              </Placeholder>
+            )}
           </Grid.Column>
         </Grid.Row>
       </Grid>

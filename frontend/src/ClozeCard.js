@@ -1,6 +1,7 @@
 import { Button, Icon } from "semantic-ui-react";
+import ReviewButtons from "./ReviewButtons";
 
-const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
+const ClozeCard = ({ phase, card, revealButtonHandler, submitRating }) => {
   let question = card.text.slice();
   const cloze_regex = /\[(.*?)\]/g;
   let deletions = card.text.match(cloze_regex);
@@ -20,25 +21,12 @@ const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
     random_deletion.substring(1, random_deletion.length - 1)
   );
 
-  const submitRating = (rating) => {
-    fetch(`/api/card/${card.id}/review`, {
-      method: "post",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        rating: rating,
-      }),
-    }).then((response) => {
-      nextCardHandler();
-    });
-  };
-
   if (phase === "question") {
     return (
       <div>
-        <h2>{question}</h2>
+        <section style={{ "margin-bottom": "3rem" }}>
+          <h2>{question}</h2>
+        </section>
         <Button size="huge" onClick={revealButtonHandler}>
           <Icon name="eye" />
           Reveal
@@ -48,21 +36,10 @@ const ClozeCard = ({ phase, card, nextCardHandler, revealButtonHandler }) => {
   } else if (phase === "answer") {
     return (
       <div>
-        <h2>{answer}</h2>
-        <Button.Group>
-          <Button size="huge" color="red" onClick={() => submitRating(0.2)}>
-            Again
-          </Button>
-          <Button size="huge" color="grey" onClick={() => submitRating(0.4)}>
-            Hard
-          </Button>
-          <Button size="huge" color="green" onClick={() => submitRating(0.6)}>
-            Good
-          </Button>
-          <Button size="huge" color="blue" onClick={() => submitRating(0.8)}>
-            Easy
-          </Button>
-        </Button.Group>
+        <section style={{ margin: "2rem 0" }}>
+          <h2>{answer}</h2>
+        </section>
+        <ReviewButtons submitRating={(rating) => submitRating(rating, card)} />
         <br />
       </div>
     );

@@ -8,20 +8,15 @@ See [this blog post](https://blog.jethro.dev/posts/taking_srs_seriously/ "this b
 
 ## Installation
 
-Using Docker is probably the easiest way to deploy this.
+You can launch an instance of this using Docker. First, retrieve your API token [here](https://hypothes.is/account/developer).
 
-1. Clone the repo:
-
-```sh
-git clone https://github.com/jethrokuan/srs.ly/
-```
-
-2. Move `.env.example` into `.env`, and edit your Hypothes.is user and API token. Get your API token e[here](https://hypothes.is/account/developer).
-
-3. Build the docker image with `docker build -t srsly .`
-
-4. Run the docker image:
+Run the instance via:
 
 ```sh
-docker run -d -p 8080:8080 -v ~/db:/db srsly
+docker run -d \
+  -p 8080:8080 \
+  -v ~/db:/db \
+  -e HYPOTHESIS_USER=username \
+  -e HYPOTHESIS_TOKEN=tokenhere \
+  srsly
 ```

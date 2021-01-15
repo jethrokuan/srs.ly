@@ -2,8 +2,6 @@ import sqlite3
 import json
 import os
 import datetime
-from dotenv import load_dotenv
-load_dotenv()
 
 class Card:
     def __init__(
@@ -122,7 +120,7 @@ class SrslyClient:
     def __init__(self, h_client):
         self.h_client = h_client
         self.db = sqlite3.connect(
-            os.getenv("DB_LOCATION"), detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
+            os.getenv("DB_LOCATION", "/db/srsly.db"), detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES
         )
         self.init_db()
 

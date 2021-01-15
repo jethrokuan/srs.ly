@@ -32,7 +32,7 @@ function SyncButton() {
       onClick={!isLoading ? handleClick : null}
     >
       {isLoading ? <Icon loading name="sync" /> : <Icon name="sync" />}
-      {isLoading ? "Syncing…" : "Sync with Hypothes.is"}
+      {isLoading ? "Syncing…" : "Sync"}
     </Button>
   );
 }

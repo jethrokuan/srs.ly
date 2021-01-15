@@ -4,9 +4,6 @@ import requests
 from srsly.hypothesis import HypothesisClient
 from srsly.srsly import SrslyClient
 
-from dotenv import load_dotenv
-load_dotenv()
-
 app = bottle.Bottle()
 
 h_client = HypothesisClient(
