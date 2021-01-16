@@ -18,5 +18,5 @@ docker run -d \
   -v ~/db:/db \
   -e HYPOTHESIS_USER=username \
   -e HYPOTHESIS_TOKEN=tokenhere \
-  srsly
+  jethrokuan/srsly
 ```
