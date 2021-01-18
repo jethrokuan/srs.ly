@@ -1,5 +1,6 @@
 import { Button, Icon } from "semantic-ui-react";
 import ReviewButtons from "./ReviewButtons";
+import ReactMarkdown from "react-markdown";
 
 const BasicCard = ({ phase, card, revealButtonHandler, submitRating }) => {
   const [question, answer] = card.text.split("\n\n");
@@ -7,7 +8,9 @@ const BasicCard = ({ phase, card, revealButtonHandler, submitRating }) => {
   if (phase === "question") {
     return (
       <div>
-        <h1>{question}</h1>
+        <section className="card">
+          <ReactMarkdown className="question">{question}</ReactMarkdown>
+        </section>
         <Button size="huge" onClick={revealButtonHandler}>
           <Icon name="eye" />
           Reveal
@@ -17,8 +20,10 @@ const BasicCard = ({ phase, card, revealButtonHandler, submitRating }) => {
   } else if (phase === "answer") {
     return (
       <div>
-        <h1>{question}</h1>
-        <p>{answer}</p>
+        <section className="card">
+          <ReactMarkdown className="question">{question}</ReactMarkdown>
+          <ReactMarkdown className="answer">{answer}</ReactMarkdown>
+        </section>
         <ReviewButtons submitRating={(rating) => submitRating(rating, card)} />
       </div>
     );

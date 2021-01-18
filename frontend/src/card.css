@@ -1,0 +1,20 @@
+.card {
+  margin: 2rem 0;
+}
+.cloze p {
+  font-weight: 700;
+  font-size: 1.71428571rem;
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+  line-height: 1.28571429em;
+  margin: calc(2rem - 0.14285714em) 0;
+  padding: 0;
+}
+
+.question p {
+  font-weight: 700;
+  font-size: 1.71428571rem;
+  font-family: Lato, "Helvetica Neue", Arial, Helvetica, sans-serif;
+  line-height: 1.28571429em;
+  margin: calc(2rem - 0.14285714em) 0;
+  padding: 0;
+}

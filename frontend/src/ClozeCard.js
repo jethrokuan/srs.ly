@@ -1,5 +1,7 @@
 import { Button, Icon } from "semantic-ui-react";
 import ReviewButtons from "./ReviewButtons";
+import ReactMarkdown from "react-markdown";
+import "./card.css";
 
 const ClozeCard = ({ phase, card, revealButtonHandler, submitRating }) => {
   let question = card.text.slice();
@@ -25,7 +27,7 @@ const ClozeCard = ({ phase, card, revealButtonHandler, submitRating }) => {
     return (
       <div>
         <section style={{ "margin-bottom": "3rem" }}>
-          <h2>{question}</h2>
+          <ReactMarkdown className="cloze">{question}</ReactMarkdown>
         </section>
         <Button size="huge" onClick={revealButtonHandler}>
           <Icon name="eye" />
@@ -37,7 +39,7 @@ const ClozeCard = ({ phase, card, revealButtonHandler, submitRating }) => {
     return (
       <div>
         <section style={{ margin: "2rem 0" }}>
-          <h2>{answer}</h2>
+          <ReactMarkdown className="cloze">{answer}</ReactMarkdown>
         </section>
         <ReviewButtons submitRating={(rating) => submitRating(rating, card)} />
         <br />
