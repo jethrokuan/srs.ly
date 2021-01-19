@@ -11,7 +11,7 @@ class Card:
         difficulty,
         days_between,
         date_last_reviewed,
-        percent_overdue,
+        correct,
         text,
         created,
         uri,
@@ -22,11 +22,18 @@ class Card:
         self.difficulty = difficulty
         self.days_between = days_between
         self.date_last_reviewed = date_last_reviewed
-        self.percent_overdue = percent_overdue
+        self.correct = correct
         self.text = text
         self.created = created
         self.uri = uri
         self.updated = updated
+
+    @property
+    def percent_overdue(self):
+        if self.correct:
+            return min(2, (datetime.datetime.now() - self.date_last_reviewed) / datetime.timedelta(days=1) / self.days_between)
+        else:
+            return 1
 
     @staticmethod
     def get(conn, id):
@@ -45,7 +52,7 @@ class Card:
             difficulty,
             days_between,
             date_last_reviewed,
-            percent_overdue,
+            correct,
         ) = c.fetchone()
         return Card(
             id=id,
@@ -57,7 +64,7 @@ class Card:
             difficulty=difficulty,
             days_between=days_between,
             date_last_reviewed=date_last_reviewed,
-            percent_overdue=percent_overdue,
+            correct=correct,
         )
 
     def save(self, conn):
@@ -67,14 +74,14 @@ class Card:
         SET difficulty = ?,
             days_between = ?,
             date_last_reviewed = ?,
-            percent_overdue = ?
+            correct = ?
         WHERE
             id = ?""",
             (
                 self.difficulty,
                 self.days_between,
                 self.date_last_reviewed,
-                self.percent_overdue,
+                self.correct,
                 self.id,
             ),
         )
@@ -82,21 +89,16 @@ class Card:
 
     def review(self, performance_rating):
         """Update review data based on last performance."""
-        correct = performance_rating >= 0.6
+        self.correct = performance_rating >= 0.6
         now = datetime.datetime.now()
         if self.date_last_reviewed is None:
             self.date_last_reviewed = now
-        if correct:
-            self.percent_overdue = min(
-                2, (now - self.date_last_reviewed) / datetime.timedelta(days=1) / self.days_between
-            )
-        else:
-            self.percent_overdue = 1
-        self.difficulty += self.percent_overdue / 17 * (8 - 9 * performance_rating)
+        percent_overdue = self.percent_overdue
+        self.difficulty += percent_overdue / 17 * (8 - 9 * performance_rating)
         self.difficulty = max(0, min(self.difficulty, 1))  # clamp difficulty to [0, 1]
         difficulty_weight = 3 - 1.7 * self.difficulty
-        if correct:
-            self.days_between = 1 + (difficulty_weight - 1) * self.percent_overdue
+        if self.correct:
+            self.days_between = 1 + (difficulty_weight - 1) * percent_overdue
         else:
             self.days_between = max(1, 1 / (difficulty_weight ** 2))
         self.date_last_reviewed = now
@@ -113,6 +115,7 @@ class Card:
             "days_between": self.days_between,
             "date_last_reviewed": self.date_last_reviewed.isoformat() if self.date_last_reviewed else None,
             "percent_overdue": self.percent_overdue,
+            "correct": self.correct,
         }
 
 
@@ -137,7 +140,7 @@ class SrslyClient:
              difficulty DOUBLE DEFAULT 0.3,
              days_between DOUBLE DEFAULT 3.0,
              date_last_reviewed TIMESTAMP DEFAULT (DATETIME('now', 'localtime')),
-             percent_overdue DOUBLE DEFAULT 1
+             correct INTEGER DEFAULT 0
              )"""
             )
         self.db.commit()
@@ -173,7 +176,7 @@ class SrslyClient:
         return card
 
     def fetch_review(self):
-        """Fetches cards that require reviewing.
+        """Returns cards that require reviewing.
 
         This defaults to at most 20 items, for cards that have not been reviewed
         in the last 8 hours.
@@ -181,9 +184,7 @@ class SrslyClient:
         c = self.db.cursor()
         c.execute("""SELECT * FROM cards
         WHERE date_last_reviewed < (DATETIME('now', 'localtime', '-8 hours'))
-        OR percent_overdue = 1
-        ORDER BY percent_overdue DESC
-        LIMIT 20""")
+        OR correct = 0""")
         rows = c.fetchall()
         cards = [
             Card(
@@ -196,12 +197,14 @@ class SrslyClient:
                 difficulty=difficulty,
                 days_between=days_between,
                 date_last_reviewed=date_last_reviewed,
-                percent_overdue=percent_overdue,
+                correct=correct,
             )
-            for id, card_type, text, uri, created, updated, difficulty, days_between, date_last_reviewed, percent_overdue in rows
+            for id, card_type, text, uri, created, updated, difficulty, days_between, date_last_reviewed, correct in rows
         ]
+        cards = filter(lambda card: card.percent_overdue >= 1, cards)
+        cards = sorted(cards, key=lambda card: card.percent_overdue)
 
-        return cards
+        return cards[:20]
 
 
     def fetch_all(self):
@@ -220,9 +223,9 @@ class SrslyClient:
                 difficulty=difficulty,
                 days_between=days_between,
                 date_last_reviewed=date_last_reviewed,
-                percent_overdue=percent_overdue,
+                correct=correct,
             )
-            for id, card_type, text, uri, created, updated, difficulty, days_between, date_last_reviewed, percent_overdue in rows
+            for id, card_type, text, uri, created, updated, difficulty, days_between, date_last_reviewed, correct in rows
         ]
 
         return cards
@@ -234,7 +237,7 @@ class SrslyClient:
                SET difficulty = 0.3,
                    days_between = 3.0,
                    date_last_reviewed = (DATETIME('now')),
-                   percent_overdue = 1
+                   correct = 0
                WHERE id = ?
             """, (card_id,))
         self.db.commit()

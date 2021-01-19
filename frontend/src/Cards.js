@@ -74,6 +74,9 @@ function Cards() {
                 <Table.Cell>
                   <ul>
                     <li>
+                      <b>correct:</b> {card.correct}
+                    </li>
+                    <li>
                       <b>% overdue:</b> {card.percent_overdue}
                     </li>
                     <li>
