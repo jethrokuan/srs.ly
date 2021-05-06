@@ -1,3 +1,9 @@
+# DEPRECATED
+
+Deprecated in favour of https://github.com/jethrokuan/srsly/
+
+The new repo is a free, "hosted" version of the service.
+
 # Srs.ly
 
 A proof-of-concept spaced repetition system built on top of hypothes.is.
